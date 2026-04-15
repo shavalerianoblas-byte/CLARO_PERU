@@ -20,10 +20,10 @@ export default function Academy() {
   const filtered = activeCat === "Todos" ? courses : courses.filter(c => c.category === activeCat);
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="p-8 xl:p-12 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* Hero de Cursos */}
-      <section className="relative h-[400px] rounded-[4rem] overflow-hidden bg-black flex items-center px-16">
+      <section className="relative h-[400px] rounded-[4rem] overflow-hidden bg-black flex items-center px-16 shadow-2xl shadow-slate-200">
         <img 
           src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2000&auto=format&fit=crop" 
           className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-1000" 
@@ -49,15 +49,15 @@ export default function Academy() {
       <div className="flex flex-col gap-8">
         <div className="flex justify-between items-end">
           <div className="space-y-2">
-            <h3 className="text-3xl font-black italic uppercase tracking-tighter">Tu Academia</h3>
-            <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">Filtrar por categoría de aprendizaje</p>
+            <h3 className="text-3xl font-black italic uppercase tracking-tighter text-slate-900">Tu Academia</h3>
+            <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Filtrar por categoría de aprendizaje</p>
           </div>
           <div className="flex gap-4">
-            <div className="p-3 bg-white rounded-2xl border border-gray-100 shadow-sm cursor-pointer">
-              <LayoutGrid size={20} className="text-gray-400 hover:text-[#ee121a] transition-colors" />
+            <div className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+              <LayoutGrid size={20} className="text-slate-400 hover:text-[#ee121a]" />
             </div>
-            <div className="p-3 bg-gray-50 rounded-2xl border border-transparent cursor-pointer">
-              <MonitorPlay size={20} className="text-gray-300" />
+            <div className="p-3 bg-slate-50 rounded-2xl border border-transparent cursor-pointer">
+              <MonitorPlay size={20} className="text-slate-300" />
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function Academy() {
               className={`px-8 py-4 rounded-3xl font-black uppercase text-[10px] tracking-widest transition-all whitespace-nowrap ${
                 activeCat === cat 
                   ? 'bg-[#ee121a] text-white shadow-xl shadow-red-100' 
-                  : 'bg-white text-gray-400 border border-gray-100 hover:border-red-100 hover:text-[#ee121a]'
+                  : 'bg-white text-slate-400 border border-slate-100 hover:border-red-100 hover:text-[#ee121a]'
               }`}
             >
               {cat}
@@ -84,7 +84,7 @@ export default function Academy() {
         {filtered.map((course) => (
           <div 
             key={course.id} 
-            className="group bg-white rounded-[3.5rem] border border-gray-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+            className="group bg-white rounded-[3.5rem] border border-slate-100 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
           >
             {/* Imagen y Badge */}
             <div className="relative h-64 overflow-hidden">
@@ -94,20 +94,20 @@ export default function Academy() {
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
               />
               <div className="absolute top-6 left-6 flex gap-2">
-                <span className="px-4 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-[8px] font-black uppercase tracking-widest text-[#1a1a1a]">
+                <span className="px-4 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-[8px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
                   {course.category}
                 </span>
               </div>
               <button className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500">
-                  <Play size={24} fill="currentColor" className="ml-1" />
+                  <Play size={24} fill="currentColor" className="ml-1 text-[#ee121a]" />
                 </div>
               </button>
             </div>
 
             {/* Contenido del Curso */}
             <div className="p-10 space-y-6">
-              <div className="flex justify-between items-center text-[10px] font-black text-gray-300 uppercase tracking-widest">
+              <div className="flex justify-between items-center text-[10px] font-black text-slate-300 uppercase tracking-widest">
                 <span className="flex items-center gap-1.5 text-[#ee121a]">
                   <BarChart3 size={12} /> {course.level}
                 </span>
@@ -116,34 +116,34 @@ export default function Academy() {
                 </span>
               </div>
               
-              <h4 className="text-2xl font-black italic uppercase leading-[1.1] text-gray-900 group-hover:text-[#ee121a] transition-colors">
+              <h4 className="text-2xl font-black italic uppercase leading-[1.1] text-slate-900 group-hover:text-[#ee121a] transition-colors line-clamp-2">
                 {course.title}
               </h4>
               
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white overflow-hidden shadow-sm">
+                <div className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white overflow-hidden shadow-sm">
                   <img src={`https://api.dicebear.com/8.x/avataaars/svg?seed=${course.instructor}`} alt={course.instructor} />
                 </div>
-                <span className="text-xs font-bold text-gray-500">{course.instructor}</span>
+                <span className="text-xs font-bold text-slate-500">{course.instructor}</span>
                 <div className="ml-auto flex items-center gap-1">
                   <Star size={12} fill="#ee121a" stroke="none" />
-                  <span className="text-xs font-black">{course.rating}</span>
+                  <span className="text-xs font-black text-slate-900">{course.rating}</span>
                 </div>
               </div>
 
               {/* Footer de la Card */}
-              <div className="pt-6 border-t border-gray-50 flex justify-between items-center">
+              <div className="pt-6 border-t border-slate-50 flex justify-between items-center">
                 <div className="flex -space-x-3">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
-                      <img src={`https://api.dicebear.com/8.x/avataaars/svg?seed=${i + 10}`} alt="Estudiante" />
+                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200 overflow-hidden shadow-sm">
+                      <img src={`https://api.dicebear.com/8.x/avataaars/svg?seed=${i + 20}`} alt="Estudiante" />
                     </div>
                   ))}
-                  <div className="w-8 h-8 rounded-full border-2 border-white bg-black flex items-center justify-center text-[8px] font-bold text-white shadow-sm">
+                  <div className="w-8 h-8 rounded-full border-2 border-white bg-slate-900 flex items-center justify-center text-[8px] font-bold text-white shadow-sm">
                     +{course.students}
                   </div>
                 </div>
-                <button className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-gray-400 hover:text-[#ee121a] transition-colors">
+                <button className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-slate-400 hover:text-[#ee121a] transition-colors">
                   Ver Detalles <ChevronRight size={14} />
                 </button>
               </div>

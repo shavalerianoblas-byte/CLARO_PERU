@@ -1,11 +1,22 @@
-import InclusionDashboard from './assets/InclusionDashboard';
+import React, { useState } from 'react'; // <--- ESTA LÍNEA ES LA QUE FALTA
+import Navbar from './componentes/Sidebar';
+ import InclusionDashboard from './assets/InclusionDashboard';
+ import Logros from './assets/Logros';
 
-function App() {
+export default function App() {
+  const [activeTab, setActiveTab] = useState('InclusionDashboard');
+
   return (
-    <div className="w-full min-h-screen">
-      <InclusionDashboard />
+    <div className="flex min-h-screen bg-[#FDFDFD]">
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <main className="flex-1 ml-20 xl:ml-72 min-h-screen">
+        {activeTab === 'InclusionDashboard' ? (
+          <InclusionDashboard /> 
+        ) : (
+          <Logros />
+        )}
+      </main>
     </div>
   );
 }
-
-export default App;
