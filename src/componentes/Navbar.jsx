@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { 
   Globe, LayoutDashboard, Gift, Gamepad2, Megaphone, 
-  Settings, Star, Menu, X 
+  Star, Menu, X 
 } from 'lucide-react';
 
 const Navbar = ({ activeTab, setActiveTab }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // IDs corregidos para coincidir con el switch de App.jsx
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'premios', icon: Gift, label: 'Rewards Elite' },
@@ -15,12 +16,14 @@ const Navbar = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    // Se agregó 'h-16' para forzar una altura fija y no crezca infinito
     <nav className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-6 shadow-sm">
       <div className="max-w-[1600px] mx-auto h-full flex items-center justify-between">
         
         {/* LOGO SECTION */}
-        <div className="flex items-center gap-2 group cursor-pointer shrink-0">
+        <div 
+          className="flex items-center gap-2 group cursor-pointer shrink-0"
+          onClick={() => setActiveTab('dashboard')} // Al hacer clic al logo vuelve al inicio
+        >
           <div className="w-8 h-8 bg-[#EE121A] rounded-lg flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105">
             <Globe size={16} strokeWidth={3} />
           </div>
@@ -35,7 +38,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => setActiveTab(item.id)} // Cambia la sección activa
               className={`flex items-center gap-2 px-4 py-1.5 rounded-xl transition-all duration-200 text-[10px] font-bold uppercase tracking-wider ${
                 activeTab === item.id 
                 ? 'bg-slate-900 text-white shadow-md' 
@@ -51,7 +54,8 @@ const Navbar = ({ activeTab, setActiveTab }) => {
         {/* SECCIÓN DERECHA */}
         <div className="flex items-center gap-3">
           {/* Badge de Puntos */}
-          <div className="hidden sm:flex items-center gap-1.5 bg-slate-50 py-1.5 px-3 rounded-xl border border-slate-100">
+          <div className="hidden sm:flex items-center gap-1.5 bg-slate-50 py-1.5 px-3 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors"
+               onClick={() => setActiveTab('premios')}>
             <Star size={12} className="text-amber-500" fill="currentColor" />
             <span className="text-[10px] font-black text-slate-900">
               10,450 <span className="text-[#EE121A]">PTS</span>
@@ -66,7 +70,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
               <p className="font-bold text-xs text-slate-900 leading-none">Shantall</p>
               <p className="text-[8px] font-medium text-slate-400 uppercase">Gerente</p>
             </div>
-            <div className="relative w-8 h-8 rounded-xl bg-slate-100 overflow-hidden ring-2 ring-slate-50 group cursor-pointer">
+            <div className="relative w-8 h-8 rounded-xl bg-slate-100 overflow-hidden ring-2 ring-slate-50 group cursor-pointer shadow-sm">
               <img 
                 src="https://api.dicebear.com/8.x/avataaars/svg?seed=Shantall" 
                 alt="Profile" 
@@ -77,7 +81,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
 
           {/* Mobile Menu Toggle */}
           <button 
-            className="lg:hidden p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg"
+            className="lg:hidden p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -85,18 +89,18 @@ const Navbar = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-      {/* MOBILE MENU DROPDOWN (FLOTANTE) */}
+      {/* MOBILE MENU DROPDOWN */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-[65px] left-0 w-full bg-white border-b border-slate-200 p-2 shadow-xl animate-in fade-in slide-in-from-top-2">
+        <div className="lg:hidden absolute top-[65px] left-0 w-full bg-white border-b border-slate-200 p-2 shadow-2xl animate-in fade-in slide-in-from-top-2">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => {
                 setActiveTab(item.id);
-                setIsMobileMenuOpen(false);
+                setIsMobileMenuOpen(false); // Cierra el menú al seleccionar
               }}
-              className={`w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase ${
-                activeTab === item.id ? 'bg-red-50 text-[#EE121A]' : 'text-slate-600'
+              className={`w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase transition-colors ${
+                activeTab === item.id ? 'bg-red-50 text-[#EE121A]' : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
               <item.icon size={18} />
