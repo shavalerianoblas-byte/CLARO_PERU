@@ -1,226 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Modo Claro - Inclusión</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #ff3cac, #2b86c5);
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* CONTENEDOR GENERAL */
-.container {
-  width: 350px;
-  padding: 20px;
-  border-radius: 20px;
-  background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(10px);
-  text-align: center;
-  animation: fadeIn 0.6s ease;
-}
-
-/* ANIMACIONES */
-@keyframes fadeIn {
-  from {opacity: 0; transform: translateY(20px);}
-  to {opacity: 1; transform: translateY(0);}
-}
-
-button {
-  padding: 10px 15px;
-  margin: 10px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  transform: scale(1.1);
-  background: #fff;
-  color: #000;
-}
-
-/* ESCENAS */
-.screen {
-  display: none;
-}
-
-.active {
-  display: block;
-}
-
-/* BOTONES OPCIONES */
-.option {
-  background: rgba(255,255,255,0.2);
-}
-
-/* FEEDBACK */
-.correct {
-  color: #00ff9c;
-  animation: pop 0.4s ease;
-}
-
-.incorrect {
-  color: #ff4d4d;
-  animation: shake 0.3s;
-}
-
-@keyframes pop {
-  0% {transform: scale(0);}
-  100% {transform: scale(1);}
-}
-
-@keyframes shake {
-  0% {transform: translateX(0);}
-  25% {transform: translateX(-5px);}
-  50% {transform: translateX(5px);}
-  75% {transform: translateX(-5px);}
-  100% {transform: translateX(0);}
-}
-
-/* BARRA PROGRESO */
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-.progress {
-  height: 8px;
-  width: 0%;
-  background: #00ff9c;
-  border-radius: 5px;
-  transition: width 0.5s;
-}
-
-</style>
+  <meta charset="UTF-8">
+  <title>Modo Claro: Decisiones que Incluyen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-<div class="container">
+<header>
+  <h1>Modo Claro</h1>
+  <nav>
+    <a href="#">Inicio</a>
+    <a href="#">Trivia</a>
+    <a href="#">Iniciativas</a>
+    <a href="#">Mi Perfil</a>
+  </nav>
+</header>
 
-  <!-- INICIO -->
-  <div id="inicio" class="screen active">
-    <h2>¿Sabrías identificar una situación de exclusión?</h2>
-    <button onclick="startGame()">Comenzar</button>
-  </div>
+<main class="container">
 
-  <!-- JUEGO -->
-  <div id="juego" class="screen">
-    <h3 id="pregunta"></h3>
+  <!-- TRIVIA -->
+  <section class="trivia">
+    <h2>Viaje de Empatía</h2>
+    <p id="progress"></p>
 
-    <button class="option" onclick="responder('si')">Sí</button>
-    <button class="option" onclick="responder('no')">No</button>
-    <button class="option" onclick="responder('depende')">Depende</button>
-
-    <div class="progress-bar">
-      <div class="progress" id="barra"></div>
+    <div class="card">
+      <h3 id="question"></h3>
+      <div id="options"></div>
+      <p id="feedback"></p>
     </div>
+  </section>
+
+  <!-- PERFIL -->
+  <aside class="profile">
+    <h2>Tu Perfil DEI</h2>
+    <div class="card">
+      <p id="profileName">Aliado en crecimiento</p>
+      <p>Puntaje: <span id="score">0</span></p>
+    </div>
+  </aside>
+
+</main>
+
+<!-- INICIATIVAS -->
+<section class="initiatives">
+  <h2>Iniciativas</h2>
+  <div class="cards">
+    <div class="card">Taller de Sesgos</div>
+    <div class="card">Charla Inclusión</div>
+    <div class="card">Programa STEM</div>
   </div>
+</section>
 
-  <!-- FEEDBACK -->
-  <div id="feedback" class="screen">
-    <h2 id="resultadoTexto"></h2>
-    <p id="explicacion"></p>
-    <button onclick="siguiente()">Continuar</button>
-  </div>
-
-  <!-- RESULTADOS -->
-  <div id="resultado" class="screen">
-    <h2>Resultado final</h2>
-    <p id="puntaje"></p>
-    <button onclick="reiniciar()">Reintentar</button>
-  </div>
-
-</div>
-
-<script>
-
-let preguntas = [
-  {
-    texto: "Un compañero interrumpe constantemente a otro",
-    correcta: "si",
-    explicacion: "Interrumpir puede invisibilizar a una persona."
-  },
-  {
-    texto: "Un jefe da oportunidades equitativas a todos",
-    correcta: "no",
-    explicacion: "Esto es un comportamiento inclusivo."
-  },
-  {
-    texto: "Se hace un comentario incómodo sobre género",
-    correcta: "si",
-    explicacion: "Puede ser una forma de discriminación."
-  }
-];
-
-let actual = 0;
-let score = 0;
-
-function mostrarPantalla(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-function startGame() {
-  actual = 0;
-  score = 0;
-  mostrarPregunta();
-  mostrarPantalla("juego");
-}
-
-function mostrarPregunta() {
-  document.getElementById("pregunta").innerText = preguntas[actual].texto;
-  document.getElementById("barra").style.width = (actual / preguntas.length) * 100 + "%";
-}
-
-function responder(opcion) {
-  let correcta = preguntas[actual].correcta;
-  let resultadoTexto = document.getElementById("resultadoTexto");
-
-  if(opcion === correcta){
-    score++;
-    resultadoTexto.innerText = "✔ Correcto";
-    resultadoTexto.className = "correct";
-  } else {
-    resultadoTexto.innerText = "❌ Incorrecto";
-    resultadoTexto.className = "incorrect";
-  }
-
-  document.getElementById("explicacion").innerText = preguntas[actual].explicacion;
-  mostrarPantalla("feedback");
-}
-
-function siguiente() {
-  actual++;
-
-  if(actual < preguntas.length){
-    mostrarPregunta();
-    mostrarPantalla("juego");
-  } else {
-    mostrarPantalla("resultado");
-    document.getElementById("puntaje").innerText = "Puntaje: " + score + " / " + preguntas.length;
-  }
-}
-
-function reiniciar() {
-  mostrarPantalla("inicio");
-}
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
