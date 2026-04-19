@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import Navbar from './componentes/Navbar'; 
+import NotFound from "./pages/NotFound";
+
+// Secciones del Dashboard
 import InclusionDashboard from './assets/InclusionDashboard';
 import Logros from './assets/Logros';
 import ZonaGamer from './componentes/ZonaGamer'; 
@@ -25,7 +28,7 @@ export default function App() {
         return <Equipo />;
       case 'academia':
         return <Academia />;
-      default:
+      case 'inicio':
         return <InclusionDashboard />;
     }
   };
@@ -51,7 +54,6 @@ export default function App() {
       
       <main className="flex-1 mt-16 p-4 md:p-8">
         <div className="max-w-[1600px] mx-auto">
-          {renderContent()}
         </div>
       </main>
 

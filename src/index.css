@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+/* Configuración de tema usando @theme (sintaxis v4) */
+@theme {
+  /* Colores corporativos Claro */
+  --color-claro-red: #EE121A;
+  --color-claro-light: #FF6B6B;
+  --color-claro-dark: #C40F15;
+  
+  /* Colores del sistema (equivalente a tu :root) */
+  --color-background: hsl(0 0% 97%);
+  --color-foreground: hsl(0 0% 15%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(0 0% 15%);
+  --color-primary: hsl(0 100% 45%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(0 0% 95%);
+  --color-secondary-foreground: hsl(0 0% 15%);
+  --color-muted: hsl(0 0% 93%);
+  --color-muted-foreground: hsl(0 0% 45%);
+  --color-accent: hsl(0 0% 93%);
+  --color-accent-foreground: hsl(0 0% 15%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-success: hsl(145 63% 42%);
+  --color-warning: hsl(38 92% 50%);
+  --color-info: hsl(210 100% 50%);
+  --color-border: hsl(0 0% 90%);
+  --color-input: hsl(0 0% 90%);
+  --color-ring: hsl(0 100% 45%);
+  
+  /* Fuentes */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Montserrat', sans-serif;
+  
+  /* Border radius */
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-4xl: 2.5rem;
+}
+
+/* Estilos base usando @layer (v4) */
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 800;
+  }
+}
+
+/* Utilidades personalizadas */
+@layer utilities {
+  /* Gradientes */
+  .bg-gradient-hero {
+    background: linear-gradient(135deg, #FF1E1E, #EE121A, #B10F15);
+  }
+  
+  .bg-gradient-warm {
+    background: linear-gradient(135deg, #EE121A, #FF8C00);
+  }
+  
+  .text-gradient-hero {
+    background: linear-gradient(135deg, #FF1E1E, #EE121A, #B10F15);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Sombras */
+  .shadow-card {
+    box-shadow: 0 4px 24px -4px rgba(0,0,0,0.08);
+  }
+
+  .shadow-card-hover {
+    box-shadow: 0 12px 32px -8px rgba(0,0,0,0.15);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 30px rgba(238, 18, 26, 0.2);
+  }
+
+  /* 3D para juegos */
+  .perspective-1000 { 
+    perspective: 1000px; 
+  }
+  
+  .preserve-3d { 
+    transform-style: preserve-3d; 
+  }
+  
+  .backface-hidden { 
+    backface-visibility: hidden; 
+  }
+  
+  .rotate-y-180 { 
+    transform: rotateY(180deg); 
+  }
+}
+
+/* Animaciones usando @keyframes (v4) */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(238, 18, 26, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(238, 18, 26, 0.6); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Clases de animación */
+.animate-float { 
+  animation: float 3s ease-in-out infinite; 
+}
+
+.animate-glow-pulse { 
+  animation: glow-pulse 2s ease-in-out infinite; 
+}
+
+.animate-shake { 
+  animation: shake 0.4s ease-in-out; 
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover { 
+  background: #EE121A;
+}
