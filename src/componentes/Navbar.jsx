@@ -6,16 +6,22 @@ import {
   LogIn, LogOut, Lock 
 } from 'lucide-react';
 
-const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLogout }) => {
+// Se agrega un valor por defecto a onNavigate para evitar el error de "not a function"
+const Navbar = ({ 
+  currentScreen, 
+  onNavigate = () => {}, 
+  isLoggedIn, 
+  displayName, 
+  role, 
+  onLogout 
+}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
 
   // Lógica de permisos para mostrar la Intranet (dueños, co-dueños o editores)
   const isOwnerOrEditor = role === "owner" || role === "coowner" || role === "editor";
 
   // Ítems de navegación dinámica
   const navItems = [
-    { id: "inicio", label: "Inicio", icon: Home },
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "premios", label: "Rewards Elite", icon: Gift },
     { id: "games", label: "Zona Gamer", icon: Gamepad2 },
@@ -24,6 +30,12 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
     ...(isOwnerOrEditor ? [{ id: "intranet", label: "Intranet", icon: Lock }] : []),
   ];
 
+  // Función auxiliar para navegar de forma segura
+  const handleNavClick = (id) => {
+    if (typeof onNavigate === 'function') {
+      onNavigate(id);
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-6 shadow-sm">
@@ -33,7 +45,7 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
         <motion.div 
           className="flex items-center gap-2 group cursor-pointer shrink-0"
           whileHover={{ scale: 1.02 }}
-          onClick={() => onNavigate("inicio")}
+          onClick={() => handleNavClick("inicio")}
         >
           <div className="w-8 h-8 bg-[#EE121A] rounded-lg flex items-center justify-center text-white shadow-md transition-transform">
             <Globe size={16} strokeWidth={3} />
@@ -44,7 +56,7 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
           </div>
         </motion.div>
 
-        {/* NAVEGACIÓN CENTRAL (SOLO DESKTOP) */}
+        {/* NAVEGACIÓN CENTRAL (DESKTOP) */}
         <div className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -54,7 +66,7 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
                 key={item.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => onNavigate(item.id)}
+                onClick={() => handleNavClick(item.id)}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl transition-all duration-200 text-[10px] font-bold uppercase tracking-wider ${
                   isActive 
                     ? 'bg-slate-900 text-white shadow-md' 
@@ -68,14 +80,13 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
           })}
         </div>
 
-        {/* SECCIÓN DERECHA: Puntos + Usuario */}
+        {/* SECCIÓN DERECHA */}
         <div className="flex items-center gap-3">
           
-          {/* Badge de Puntos (Solo si hay sesión activa) */}
           {isLoggedIn && (
             <div 
               className="hidden sm:flex items-center gap-1.5 bg-slate-50 py-1.5 px-3 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors"
-              onClick={() => onNavigate('premios')}
+              onClick={() => handleNavClick('premios')}
             >
               <Star size={12} className="text-amber-500" fill="currentColor" />
               <span className="text-[10px] font-black text-slate-900">
@@ -86,7 +97,6 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
 
           <div className="h-6 w-[1px] bg-slate-200 hidden md:block" />
 
-          {/* Autenticación / Perfil de Usuario */}
           {isLoggedIn ? (
             <div className="flex items-center gap-2 pl-1">
               <div className="text-right hidden sm:block">
@@ -112,7 +122,7 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onNavigate("login")}
+              onClick={() => handleNavClick("login")}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 text-[#EE121A] text-[10px] font-black uppercase tracking-wider hover:bg-[#EE121A] hover:text-white transition-all"
             >
               <LogIn size={14} strokeWidth={3} />
@@ -120,7 +130,6 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
             </motion.button>
           )}
 
-          {/* Botón Menú Móvil */}
           <button 
             className="lg:hidden p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -130,7 +139,7 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
         </div>
       </div>
 
-      {/* MENÚ DESPLEGABLE PARA MÓVILES */}
+      {/* MENÚ MÓVIL */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
@@ -144,7 +153,7 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
                 <button
                   key={item.id}
                   onClick={() => {
-                    onNavigate(item.id);
+                    handleNavClick(item.id);
                     setIsMobileMenuOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase transition-colors ${
@@ -161,7 +170,7 @@ const Navbar = ({ currentScreen, onNavigate, isLoggedIn, displayName, role, onLo
               {!isLoggedIn && (
                 <button
                   onClick={() => { 
-                    onNavigate("login"); 
+                    handleNavClick("login"); 
                     setIsMobileMenuOpen(false); 
                   }}
                   className="w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase text-[#EE121A] bg-red-50 mt-2"

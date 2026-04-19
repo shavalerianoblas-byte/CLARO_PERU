@@ -17,31 +17,30 @@ export default function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
+      case 'inicio': // Ambos muestran el dashboard principal
         return <InclusionDashboard />;
       case 'premios':
         return <Logros />;
-      case 'juegos':
+      case 'games': // Cambié 'juegos' por 'games' para que coincida con el ID del Navbar
         return <ZonaGamer />;
       case 'denuncia':
         return <SeccionDenuncia />;
       case 'equipo':
         return <Equipo />;
       case 'academia':
+      case 'guia': // Añadí guía por si acaso
         return <Academia />;
-      case 'inicio':
-        return <InclusionDashboard />;
     }
   };
 
-  // Función de navegación para el chatbot
   const handleNavigate = (destination) => {
     const tabMap = {
       'personal': 'dashboard',
       'equipo': 'equipo',
       'premios': 'premios',
-      'juegos': 'juegos',
+      'games': 'games',
       'denuncia': 'denuncia',
-      'academia': 'academia'
+      'academia': 'academia',
     };
     
     const targetTab = tabMap[destination] || 'dashboard';
@@ -49,15 +48,22 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#FDFDFD]">
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="flex flex-col min-h-screen bg-[#FDFDFD]">
+      {/* 1. Ajuste de Props: Navbar ahora usa 'currentScreen' y 'onNavigate' */}
+      <Navbar 
+        currentScreen={activeTab} 
+        onNavigate={setActiveTab} 
+        isLoggedIn={true} // O el estado que manejes
+        displayName="Shantall" 
+      />
       
       <main className="flex-1 mt-16 p-4 md:p-8">
         <div className="max-w-[1600px] mx-auto">
+          {/* 2. EL CAMBIO CLAVE: Aquí es donde se inyecta el contenido */}
+          {renderContent()}
         </div>
       </main>
 
-      {/* DEIAssistant a nivel de App para que persista entre vistas */}
       <DEIAssistant 
         currentView={activeTab === 'equipo' ? 'equipo' : 'personal'}
         onNavigate={handleNavigate}
