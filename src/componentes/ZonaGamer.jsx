@@ -1,9 +1,53 @@
 import React, { useState } from 'react';
 import { Gamepad2, Trophy, Star, ArrowRight, RotateCcw } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 
+// COMPONENTES UI INLINE (reemplazan @/components/ui/*)
+const Card = ({ children, className = "" }) => (
+  <div className={`bg-white rounded-xl shadow-sm border border-gray-100 ${className}`}>
+    {children}
+  </div>
+);
+
+const CardHeader = ({ children }) => (
+  <div className="p-6 pb-2">{children}</div>
+);
+
+const CardTitle = ({ children }) => (
+  <h3 className="text-xl font-semibold text-gray-900">{children}</h3>
+);
+
+const CardContent = ({ children, className = "" }) => (
+  <div className={`p-6 pt-2 ${className}`}>{children}</div>
+);
+
+const Button = ({ children, onClick, className = "", variant = "default" }) => {
+  const baseStyles = "px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center";
+  const variants = {
+    default: "bg-red-600 text-white hover:bg-red-700 shadow-md",
+    outline: "border-2 border-gray-300 text-gray-700 hover:border-red-600 hover:bg-red-50 hover:text-red-600",
+    ghost: "text-gray-600 hover:bg-gray-100"
+  };
+  
+  return (
+    <button 
+      onClick={onClick} 
+      className={`${baseStyles} ${variants[variant] || variants.default} ${className}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+const Progress = ({ value, className = "" }) => (
+  <div className={`w-full bg-gray-200 rounded-full h-2 ${className}`}>
+    <div 
+      className="bg-red-600 h-2 rounded-full transition-all duration-500" 
+      style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+    />
+  </div>
+);
+
+// DATOS DEL JUEGO
 const PREGUNTAS_JUEGO = [
   {
     pregunta: "¿Quién fue la primera programadora de la historia?",
@@ -20,17 +64,17 @@ const PREGUNTAS_JUEGO = [
 ];
 
 export default function ZonaGamer() {
-  const [paso, setPaso] = useState(0); // 0: Inicio, 1: Jugando, 2: Resultado
+  const [paso, setPaso] = useState(0);
   const [preguntaActual, setPreguntaActual] = useState(0);
   const [puntaje, setPuntaje] = useState(0);
 
   const manejarRespuesta = (index) => {
     if (index === PREGUNTAS_JUEGO[preguntaActual].correcta) {
-      setPuntaje(puntaje + 10);
+      setPuntaje(p => p + 10);
     }
 
     if (preguntaActual + 1 < PREGUNTAS_JUEGO.length) {
-      setPreguntaActual(preguntaActual + 1);
+      setPreguntaActual(p => p + 1);
     } else {
       setPaso(2);
     }
@@ -44,6 +88,7 @@ export default function ZonaGamer() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      {/* HEADER */}
       <header className="flex items-center justify-between bg-gradient-to-r from-red-600 to-red-500 p-6 rounded-2xl text-white shadow-lg">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -56,6 +101,7 @@ export default function ZonaGamer() {
         </div>
       </header>
 
+      {/* PASO 0: INICIO */}
       {paso === 0 && (
         <Card className="text-center py-12 border-2 border-dashed border-red-200">
           <CardContent className="space-y-6">
@@ -63,30 +109,43 @@ export default function ZonaGamer() {
               <Star className="w-10 h-10" fill="currentColor" />
             </div>
             <h3 className="text-2xl font-bold text-gray-800">¿Lista para el desafío?</h3>
-            <p className="text-gray-500 max-w-sm mx-auto">Pon a prueba tus conocimientos sobre mujeres en tecnología y gana medallas para tu perfil.</p>
-            <Button onClick={() => setPaso(1)} className="bg-red-600 hover:bg-red-700 px-8 py-6 text-lg rounded-xl">
+            <p className="text-gray-500 max-w-sm mx-auto">
+              Pon a prueba tus conocimientos sobre mujeres en tecnología y gana medallas para tu perfil.
+            </p>
+            <Button 
+              onClick={() => setPaso(1)} 
+              className="px-8 py-6 text-lg rounded-xl"
+            >
               ¡Comenzar Juego!
             </Button>
           </CardContent>
         </Card>
       )}
 
+      {/* PASO 1: JUGANDO */}
       {paso === 1 && (
         <Card className="border-none shadow-xl overflow-hidden">
-          <Progress value={((preguntaActual + 1) / PREGUNTAS_JUEGO.length) * 100} className="h-2 rounded-none bg-gray-100" />
+          <Progress 
+            value={((preguntaActual + 1) / PREGUNTAS_JUEGO.length) * 100} 
+            className="h-2 rounded-none bg-gray-100" 
+          />
           <CardHeader>
-            <span className="text-red-600 font-bold text-sm uppercase tracking-wider">Pregunta {preguntaActual + 1} de {PREGUNTAS_JUEGO.length}</span>
-            <CardTitle className="text-2xl">{PREGUNTAS_JUEGO[preguntaActual].pregunta}</CardTitle>
+            <span className="text-red-600 font-bold text-sm uppercase tracking-wider">
+              Pregunta {preguntaActual + 1} de {PREGUNTAS_JUEGO.length}
+            </span>
+            <CardTitle>{PREGUNTAS_JUEGO[preguntaActual].pregunta}</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {PREGUNTAS_JUEGO[preguntaActual].opciones.map((opcion, i) => (
               <Button 
                 key={i} 
                 variant="outline" 
-                className="h-16 text-lg justify-start px-6 hover:border-red-600 hover:bg-red-50 transition-all"
+                className="h-16 text-lg justify-start px-6"
                 onClick={() => manejarRespuesta(i)}
               >
-                <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3 text-sm">{i + 1}</span>
+                <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3 text-sm font-bold">
+                  {i + 1}
+                </span>
                 {opcion}
               </Button>
             ))}
@@ -94,14 +153,21 @@ export default function ZonaGamer() {
         </Card>
       )}
 
+      {/* PASO 2: RESULTADO */}
       {paso === 2 && (
-        <Card className="bg-gray-900 text-white overflow-hidden">
+        <Card className="bg-gray-900 text-white overflow-hidden border-none">
           <CardContent className="py-12 text-center space-y-6">
             <Trophy className="w-20 h-20 text-yellow-400 mx-auto animate-bounce" />
             <h3 className="text-3xl font-bold">¡Hackathon Completada!</h3>
-            <p className="text-gray-400 text-xl">Tu puntaje final: <span className="text-white font-bold">{puntaje} puntos</span></p>
+            <p className="text-gray-400 text-xl">
+              Tu puntaje final: <span className="text-white font-bold">{puntaje} puntos</span>
+            </p>
             <div className="flex justify-center gap-4">
-              <Button onClick={reiniciar} variant="outline" className="text-white border-white/20 hover:bg-white/10">
+              <Button 
+                onClick={reiniciar} 
+                variant="outline" 
+                className="text-white border-white/20 hover:bg-white/10"
+              >
                 <RotateCcw className="mr-2 w-4 h-4" /> Reintentar
               </Button>
               <Button className="bg-red-600 hover:bg-red-700">
