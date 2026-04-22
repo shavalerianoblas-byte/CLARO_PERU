@@ -1,280 +1,255 @@
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { db } from "../lib/firebase"; 
-import { useAuth } from "../hook/useAuth";
 import { 
-  collection, 
-  query, 
-  orderBy, 
-  onSnapshot, 
-  doc, 
-  updateDoc, 
-  getDocs 
+  collection, query, orderBy, onSnapshot, doc, 
+  updateDoc, deleteDoc 
 } from "firebase/firestore";
 import { 
-  Users, FileText, BarChart3, MessageCircle, 
-  Shield, ChevronDown, Clock, AlertTriangle 
+  Users, FileText, Shield, Lock, Gamepad2, 
+  X, Search, Trash2, Mail, ShieldCheck, ExternalLink
 } from "lucide-react";
+import { toast } from "sonner";
+import AdminJuegos from "../componentes/admin/AdminJuegos";
 
-const IntranetScreen = () => {
-  const { user, role } = useAuth();
+const IntranetScreen = ({ user, role }) => {
   const [activeTab, setActiveTab] = useState("users");
+  const [showGameAdmin, setShowGameAdmin] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   
-  // Estados para los datos de Firebase
+  // Estados para datos
   const [users, setUsers] = useState([]);
   const [denuncias, setDenuncias] = useState([]);
-  const [scores, setScores] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [changingRole, setChangingRole] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const isOwner = role === "owner";
+  // Verificación de Roles (Seguridad)
+  const currentRole = role?.toLowerCase() || user?.role?.toLowerCase() || "cliente";
+  const hasAccess = ["owner", "propietario", "editor", "coowner", "admin"].includes(currentRole);
 
-  // Efecto para cargar TODO en tiempo real
   useEffect(() => {
-    if (!["owner", "coowner", "editor"].includes(role)) return;
+    if (!hasAccess) return;
 
-    // 1. Escuchar Usuarios (Profiles)
-    const qUsers = query(collection(db, "profiles"), orderBy("email", "asc"));
-    const unsubUsers = onSnapshot(qUsers, (snap) => {
+    // Suscripción en tiempo real a Usuarios
+    const unsubUsers = onSnapshot(collection(db, "profiles"), (snap) => {
       setUsers(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoading(false);
     });
 
-    // 2. Escuchar Denuncias
-    const qDen = query(collection(db, "denuncias"), orderBy("created_at", "desc"));
-    const unsubDen = onSnapshot(qDen, (snap) => {
-      setDenuncias(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
-
-    // 3. Escuchar Puntajes
-    const qScores = query(collection(db, "game_scores"), orderBy("created_at", "desc"));
-    const unsubScores = onSnapshot(qScores, (snap) => {
-      setScores(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
-
-    // 4. Escuchar Comentarios
-    const qCom = query(collection(db, "comments"), orderBy("createdAt", "desc"));
-    const unsubCom = onSnapshot(qCom, (snap) => {
-      setComments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
+    // Suscripción en tiempo real a Denuncias
+    const unsubDenuncias = onSnapshot(
+      query(collection(db, "denuncias"), orderBy("created_at", "desc")), 
+      (snap) => {
+        setDenuncias(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      }
+    );
 
     return () => {
       unsubUsers();
-      unsubDen();
-      unsubScores();
-      unsubCom();
+      unsubDenuncias();
     };
-  }, [role]);
+  }, [hasAccess]);
 
-  const handleRoleChange = async (userId, newRole) => {
-    if (!isOwner) return;
-    setChangingRole(userId);
+  // Acciones Rápidas
+  const cambiarRol = async (userId, nuevoRol) => {
     try {
-      const userRef = doc(db, "profiles", userId);
-      await updateDoc(userRef, { role: newRole });
-    } catch (error) {
-      console.error("Error cambiando rol:", error);
+      await updateDoc(doc(db, "profiles", userId), { role: nuevoRol });
+      toast.success("Rol actualizado con éxito");
+    } catch (e) {
+      toast.error("Error al cambiar rol");
     }
-    setChangingRole(null);
   };
 
-  const tabs = [
-    { id: "users", label: "Usuarios", icon: Users, count: users.length },
-    { id: "denuncias", label: "Denuncias", icon: FileText, count: denuncias.length },
-    { id: "scores", label: "Puntajes", icon: BarChart3, count: scores.length },
-    { id: "comments", label: "Comentarios", icon: MessageCircle, count: comments.length },
-  ];
-
-  const roleLabels = {
-    owner: "Propietario",
-    coowner: "Copropietario",
-    editor: "Editor",
-    client: "Cliente",
+  const eliminarDenuncia = async (id) => {
+    if(!window.confirm("¿Archivar esta denuncia definitivamente?")) return;
+    try {
+      await deleteDoc(doc(db, "denuncias", id));
+      toast.success("Denuncia archivada");
+    } catch (e) {
+      toast.error("Error al eliminar");
+    }
   };
 
-  const roleColors = {
-    owner: "bg-red-100 text-red-600",
-    coowner: "bg-amber-100 text-amber-600",
-    editor: "bg-blue-100 text-blue-600",
-    client: "bg-slate-100 text-slate-500",
-  };
+  // Filtrado de usuarios
+  const filteredUsers = users.filter(u => 
+    u.display_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const formatDate = (ts) => {
-    if (!ts) return "---";
-    const date = ts.toDate ? ts.toDate() : new Date(ts);
-    return date.toLocaleDateString("es-PE");
-  };
+  if (!hasAccess) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 text-center">
+        <div className="bg-white p-10 rounded-[3rem] shadow-xl border border-slate-100 max-w-sm">
+          <Lock size={60} className="text-red-500 mx-auto mb-6 opacity-20" />
+          <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Acceso Denegado</h2>
+          <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-4 leading-relaxed">
+            Esta zona está reservada para administración de alto nivel.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl min-h-screen bg-slate-50/50">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        
-        {/* Encabezado */}
-        <div className="flex items-center gap-3 mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <div className="p-3 bg-red-600 rounded-xl text-white shadow-lg shadow-red-200">
-            <Shield size={24} />
+    <div className="min-h-screen bg-[#F8FAFC] pb-20">
+      {/* --- HEADER PRINCIPAL --- */}
+      <div className="bg-white border-b border-slate-100 p-6 md:px-12 sticky top-0 z-20 shadow-sm">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="bg-slate-900 p-4 rounded-2xl text-white">
+              <ShieldCheck size={28}/>
+            </div>
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">Intranet Master</h1>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Gestión Centralizada de Plataforma</p>
+            </div>
           </div>
-          <div>
-            <h2 className="font-black text-2xl text-slate-900 tracking-tight">Panel Administrativo</h2>
-            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-              Acceso: <span className="text-red-600 font-bold">{roleLabels[role] || "Cargando..."}</span>
-            </p>
+
+          <div className="flex gap-3 w-full md:w-auto">
+            <button 
+              onClick={() => setShowGameAdmin(true)}
+              className="flex-1 md:flex-none bg-red-600 text-white px-8 h-14 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-700 transition-all shadow-lg shadow-red-100"
+            >
+              <Gamepad2 size={20} />
+              Configurar Juegos
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Tabs de Navegación */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const active = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
-                  active
-                    ? "bg-slate-900 text-white shadow-xl shadow-slate-200"
-                    : "bg-white text-slate-500 hover:bg-slate-50 border border-slate-100"
-                }`}
-              >
-                <Icon size={16} />
-                {tab.label}
-                <span className={`ml-1 px-2 py-0.5 rounded-full text-[10px] ${active ? "bg-white/20" : "bg-slate-100"}`}>
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <div className="max-w-7xl mx-auto p-6 md:p-12">
+        {/* --- NAVEGACIÓN Y BÚSQUEDA --- */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+          <div className="flex bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm w-full md:w-auto">
+            <button 
+              onClick={() => setActiveTab("users")}
+              className={`flex items-center gap-3 px-8 py-3 rounded-xl font-black text-[10px] uppercase transition-all ${activeTab === "users" ? "bg-slate-900 text-white shadow-lg" : "text-slate-400 hover:bg-slate-50"}`}
+            >
+              <Users size={16}/> Colaboradores
+            </button>
+            <button 
+              onClick={() => setActiveTab("denuncias")}
+              className={`flex items-center gap-3 px-8 py-3 rounded-xl font-black text-[10px] uppercase transition-all ${activeTab === "denuncias" ? "bg-slate-900 text-white shadow-lg" : "text-slate-400 hover:bg-slate-50"}`}
+            >
+              <FileText size={16}/> Línea Ética
+            </button>
+          </div>
 
-        {/* CONTENIDO DE TABS */}
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-          
-          {/* TAB: USUARIOS */}
           {activeTab === "users" && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50/50">
-                  <tr className="border-b border-slate-100 text-slate-400">
-                    <th className="text-left px-6 py-4 font-bold uppercase text-[10px] tracking-widest">Usuario</th>
-                    <th className="text-left px-6 py-4 font-bold uppercase text-[10px] tracking-widest">Correo</th>
-                    <th className="text-left px-6 py-4 font-bold uppercase text-[10px] tracking-widest">Rol</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4 font-bold text-slate-900">{u.display_name || "Sin nombre"}</td>
-                      <td className="px-6 py-4 text-slate-500">{u.email}</td>
-                      <td className="px-6 py-4">
-                        {isOwner && u.id !== user?.uid ? (
-                          <div className="relative inline-block">
-                            <select
-                              value={u.role}
-                              onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                              disabled={changingRole === u.id}
-                              className="appearance-none pr-8 pl-3 py-1.5 rounded-lg text-xs font-black border border-slate-200 bg-white text-slate-700 cursor-pointer focus:ring-2 focus:ring-red-500/20"
-                            >
-                              <option value="client">Cliente</option>
-                              <option value="editor">Editor</option>
-                              <option value="coowner">Copropietario</option>
-                              <option value="owner">Dueño</option>
-                            </select>
-                            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                          </div>
-                        ) : (
-                          <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter ${roleColors[u.role || "client"]}`}>
-                            {roleLabels[u.role || "client"]}
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* TAB: DENUNCIAS */}
-          {activeTab === "denuncias" && (
-            <div className="p-6 grid gap-4">
-              {denuncias.length === 0 ? (
-                <div className="text-center py-20 text-slate-400 italic">No hay denuncias activas</div>
-              ) : (
-                denuncias.map((d) => (
-                  <div key={d.id} className="p-5 border border-slate-100 rounded-2xl hover:border-red-100 transition-colors">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex gap-2">
-                        <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-lg ${
-                          d.severity === "alta" ? "bg-red-50 text-red-600 border border-red-100" : "bg-slate-50 text-slate-500"
-                        }`}>
-                          Nivel: {d.severity || "normal"}
-                        </span>
-                        <span className="text-[10px] font-black uppercase px-3 py-1 rounded-lg bg-slate-900 text-white">
-                          {d.type}
-                        </span>
-                      </div>
-                      <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                        <Clock size={12} /> {formatDate(d.created_at)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-slate-700 mb-4 leading-relaxed">{d.description}</p>
-                    <div className="bg-slate-50 p-3 rounded-xl flex flex-wrap gap-4 text-[10px] text-slate-500 font-bold uppercase">
-                      <p>Área: <span className="text-slate-900">{d.area || "N/A"}</span></p>
-                      <p>Reportado por: <span className="text-slate-900">{d.anonymous ? "Anónimo" : "Identificado"}</span></p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-
-          {/* TAB: PUNTAJES */}
-          {activeTab === "scores" && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50/50">
-                  <tr className="border-b border-slate-100 text-slate-400">
-                    <th className="text-left px-6 py-4 font-bold uppercase text-[10px]">Usuario ID</th>
-                    <th className="text-left px-6 py-4 font-bold uppercase text-[10px]">Juego</th>
-                    <th className="text-left px-6 py-4 font-bold uppercase text-[10px]">Puntaje</th>
-                    <th className="text-left px-6 py-4 font-bold uppercase text-[10px]">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {scores.map((s) => (
-                    <tr key={s.id}>
-                      <td className="px-6 py-4 text-xs font-mono text-slate-500">{s.user_id}</td>
-                      <td className="px-6 py-4 font-bold text-slate-900 capitalize">{s.game_type}</td>
-                      <td className="px-6 py-4">
-                        <span className="bg-green-50 text-green-600 px-3 py-1 rounded-lg font-black">{s.score} pts</span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-400 text-xs">{formatDate(s.created_at)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* TAB: COMENTARIOS (VISTA MODERACIÓN) */}
-          {activeTab === "comments" && (
-            <div className="p-6 space-y-3">
-              {comments.map((c) => (
-                <div key={c.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
-                  <div className="flex items-center gap-3">
-                    <img src={c.userPhoto} className="w-8 h-8 rounded-full border border-white" alt="" />
-                    <div>
-                      <p className="text-xs font-bold text-slate-900">{c.userName}</p>
-                      <p className="text-xs text-slate-600 line-clamp-1 italic">"{c.text}"</p>
-                    </div>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-bold">{formatDate(c.createdAt)}</span>
-                </div>
-              ))}
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+              <input 
+                type="text"
+                placeholder="Buscar por nombre o correo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 bg-white border border-slate-100 rounded-2xl text-sm font-bold outline-none focus:ring-2 ring-slate-100 shadow-sm transition-all"
+              />
             </div>
           )}
         </div>
-      </motion.div>
+
+        {/* --- TABLA DE USUARIOS --- */}
+        {activeTab === "users" && (
+          <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100">
+                  <tr>
+                    <th className="p-8">Colaborador</th>
+                    <th className="p-8 text-center">Rol Actual</th>
+                    <th className="p-8 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {filteredUsers.map((u) => (
+                    <tr key={u.id} className="hover:bg-slate-50/30 transition-colors group">
+                      <td className="p-8">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center font-black text-slate-400 group-hover:bg-red-50 group-hover:text-red-500 transition-colors uppercase">
+                            {u.display_name?.substring(0,2)}
+                          </div>
+                          <div>
+                            <p className="font-black text-slate-900 text-sm uppercase tracking-tight">{u.display_name}</p>
+                            <p className="text-xs text-slate-400 font-medium flex items-center gap-1"><Mail size={12}/> {u.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-8 text-center">
+                        <select 
+                          value={u.role || "cliente"}
+                          onChange={(e) => cambiarRol(u.id, e.target.value)}
+                          className="bg-slate-100 border-none text-[10px] font-black uppercase px-4 py-2 rounded-xl focus:ring-2 ring-red-100 outline-none cursor-pointer"
+                        >
+                          <option value="cliente">Colaborador</option>
+                          <option value="editor">Editor Contenido</option>
+                          <option value="owner">Propietario / Owner</option>
+                        </select>
+                      </td>
+                      <td className="p-8 text-right">
+                         <button className="p-3 text-slate-300 hover:text-red-500 transition-colors">
+                            <Trash2 size={18}/>
+                         </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* --- LÍNEA ÉTICA (DENUNCIAS) --- */}
+        {activeTab === "denuncias" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4">
+            {denuncias.map((d) => (
+              <div key={d.id} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative group hover:shadow-xl transition-all">
+                <div className="flex justify-between items-start mb-6">
+                  <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${d.anonimo ? 'bg-slate-900 text-white' : 'bg-red-100 text-red-600'}`}>
+                    {d.anonimo ? "Reporte Anónimo" : "Identificado"}
+                  </div>
+                  <button onClick={() => eliminarDenuncia(d.id)} className="text-slate-200 hover:text-red-500 transition-colors">
+                    <Trash2 size={18}/>
+                  </button>
+                </div>
+                <h3 className="font-black text-slate-900 text-lg mb-2 uppercase tracking-tight">{d.type}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed mb-6 italic">"{d.description}"</p>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 uppercase">
+                  <ExternalLink size={12}/>
+                  Enviado el {d.created_at?.toDate().toLocaleString()}
+                </div>
+              </div>
+            ))}
+            {denuncias.length === 0 && (
+              <div className="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200">
+                <p className="text-slate-300 font-black uppercase text-xs tracking-widest">No hay reportes de ética pendientes</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* --- MODAL PANTALLA COMPLETA: ADMIN JUEGOS --- */}
+      <AnimatePresence>
+        {showGameAdmin && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 z-[100] bg-white overflow-y-auto"
+          >
+            <div className="relative">
+              <button 
+                onClick={() => setShowGameAdmin(false)}
+                className="fixed top-8 right-8 z-[110] bg-slate-900 text-white p-4 rounded-2xl hover:bg-red-600 transition-all shadow-2xl"
+              >
+                <X size={24}/>
+              </button>
+              {/* Aquí invocamos el componente AdminJuegos que ya creamos */}
+              <AdminJuegos userRole={currentRole} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

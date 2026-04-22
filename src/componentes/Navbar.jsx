@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Globe, LayoutDashboard, Gift, Gamepad2, 
-  Star, Menu, X, Home, BookOpen, Shield, 
-  LogIn, LogOut, Lock 
+  Globe, 
+  LayoutDashboard, 
+  Gift, 
+  Gamepad2, 
+  Star, 
+  Menu, 
+  X, 
+  BookOpen, 
+  Shield, 
+  LogIn, 
+  LogOut, 
+  Lock 
 } from 'lucide-react';
 
 const Navbar = ({ 
   currentScreen, 
-  onNavigate = () => {}, 
+  onNavigate, 
   isLoggedIn, 
   displayName, 
   role, 
@@ -16,34 +25,38 @@ const Navbar = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Lógica de permisos para ver la Intranet
   const isOwnerOrEditor = role === "owner" || role === "coowner" || role === "editor";
 
+  // Definición de ítems de navegación
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "premios", label: "Rewards Elite", icon: Gift },
     { id: "games", label: "Zona Gamer", icon: Gamepad2 },
-    { id: "guia", label: "Guía", icon: BookOpen },
+    { id: "academia", label: "Academia", icon: BookOpen },
     { id: "denuncia", label: "Línea Ética", icon: Shield },
-    ...(isOwnerOrEditor ? [{ id: "intranet", label: "Intranet", icon: Lock }] : []),
+    // Solo se inyecta este ítem si tiene el rol adecuado
+    ...(isOwnerOrEditor ? [{ id: "intranet", label: "Intranet / Editar", icon: Lock }] : []),
   ];
 
   const handleNavClick = (id) => {
     if (typeof onNavigate === 'function') {
       onNavigate(id);
     }
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-6 shadow-sm">
       <div className="max-w-[1600px] mx-auto h-full flex items-center justify-between">
         
-        {/* SECCIÓN LOGO - ROJO CORPORATIVO */}
+        {/* LOGO CORPORATIVO */}
         <motion.div 
           className="flex items-center gap-2 group cursor-pointer shrink-0"
           whileHover={{ scale: 1.02 }}
-          onClick={() => handleNavClick("inicio")}
+          onClick={() => handleNavClick("dashboard")}
         >
-          <div className="w-8 h-8 bg-[#EE121A] rounded-lg flex items-center justify-center text-white shadow-md transition-transform">
+          <div className="w-8 h-8 bg-[#EE121A] rounded-lg flex items-center justify-center text-white shadow-md transition-transform group-hover:rotate-6">
             <Globe size={16} strokeWidth={3} />
           </div>
           <div className="flex flex-col">
@@ -52,7 +65,7 @@ const Navbar = ({
           </div>
         </motion.div>
 
-        {/* NAVEGACIÓN CENTRAL (DESKTOP) */}
+        {/* NAVEGACIÓN DESKTOP */}
         <div className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -76,7 +89,7 @@ const Navbar = ({
           })}
         </div>
 
-        {/* SECCIÓN DERECHA */}
+        {/* SECCIÓN DERECHA: PUNTOS Y PERFIL */}
         <div className="flex items-center gap-3">
           
           {isLoggedIn && (
@@ -95,17 +108,26 @@ const Navbar = ({
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2 pl-1">
+              {/* Info del Usuario */}
               <div className="text-right hidden sm:block">
-                <p className="font-bold text-xs text-slate-900 leading-none">{displayName || 'Usuario'}</p>
-                <p className="text-[8px] font-medium text-[#EE121A] uppercase">{role || 'Miembro'}</p>
+                <p className="font-bold text-xs text-slate-900 leading-none">
+                  {displayName || 'Usuario'}
+                </p>
+                <p className="text-[8px] font-black text-[#EE121A] uppercase mt-1 tracking-wider">
+                  {role || 'Cliente'}
+                </p>
               </div>
-              <div className="relative w-8 h-8 rounded-xl bg-red-50 overflow-hidden ring-2 ring-red-100 group cursor-pointer shadow-sm">
+
+              {/* Avatar dinámico */}
+              <div className="relative w-9 h-9 rounded-xl bg-red-50 overflow-hidden ring-2 ring-red-100 shadow-sm group">
                 <img 
                   src={`https://api.dicebear.com/8.x/avataaars/svg?seed=${displayName || 'Claro'}`} 
                   alt="Avatar" 
                   className="w-full h-full object-cover"
                 />
               </div>
+
+              {/* Botón Logout */}
               <button 
                 onClick={onLogout}
                 className="ml-1 p-2 text-slate-400 hover:text-[#EE121A] transition-colors"
@@ -119,13 +141,14 @@ const Navbar = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleNavClick("login")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#EE121A] text-white text-[10px] font-black uppercase tracking-wider hover:bg-red-700 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#EE121A] text-white text-[10px] font-black uppercase tracking-wider hover:bg-red-700 transition-all shadow-lg shadow-red-500/20"
             >
               <LogIn size={14} strokeWidth={3} />
               Ingresar
             </motion.button>
           )}
 
+          {/* Menú hamburguesa (Móvil) */}
           <button 
             className="lg:hidden p-1.5 text-slate-600 hover:bg-red-50 hover:text-[#EE121A] rounded-lg transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -135,7 +158,7 @@ const Navbar = ({
         </div>
       </div>
 
-      {/* MENÚ MÓVIL */}
+      {/* MENÚ MÓVIL DESPLEGABLE */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
@@ -144,14 +167,11 @@ const Navbar = ({
             exit={{ opacity: 0, height: 0 }}
             className="lg:hidden absolute top-[64px] left-0 w-full bg-white border-b border-slate-200 p-2 shadow-2xl overflow-hidden"
           >
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 p-2">
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => {
-                    handleNavClick(item.id);
-                    setIsMobileMenuOpen(false);
-                  }}
+                  onClick={() => handleNavClick(item.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase transition-colors ${
                     currentScreen === item.id 
                       ? 'bg-[#EE121A] text-white' 
@@ -163,15 +183,12 @@ const Navbar = ({
                 </button>
               ))}
               
-              {!isLoggedIn && (
+              {isLoggedIn && (
                 <button
-                  onClick={() => { 
-                    handleNavClick("login"); 
-                    setIsMobileMenuOpen(false); 
-                  }}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase text-white bg-[#EE121A] mt-2"
+                  onClick={onLogout}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase text-red-600 hover:bg-red-50 mt-2 border-t border-slate-100"
                 >
-                  <LogIn size={18} /> Ingresar al Portal
+                  <LogOut size={18} /> Cerrar Sesión
                 </button>
               )}
             </div>
