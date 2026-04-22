@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, onNavigate } from 'react';
 import DEIAssistant from '../componentes/DEIAssistant';
-import { 
-  Play, Trophy, Clock, CheckCircle2, Flame, 
+import {
+  Play, Trophy, Clock, CheckCircle2, Flame,
   ChevronRight, Send, Calendar, Users, TrendingUp,
   X, Download, Heart, Target, Award, Star,
   Globe, Sparkles, BookOpen, ArrowUpRight, Zap,
   Newspaper, TrendingUp as TrendIcon, Lightbulb,
   Share2, Bookmark, MoreHorizontal
 } from 'lucide-react';
+import MiProgreso from './MiProgreso';
 
 // ==========================================
 // SISTEMA DE DISEÑO - COLORES CORPORATIVOS
@@ -43,7 +44,7 @@ const Badge = ({ children, variant = 'primary', size = 'md', animated = false })
     light: 'bg-red-50 text-[#EE121A]',
     outline: 'bg-transparent text-[#EE121A] border-2 border-[#EE121A]'
   };
-  
+
   const sizes = {
     sm: 'px-2 py-0.5 text-[9px]',
     md: 'px-3 py-1 text-[10px]',
@@ -62,10 +63,10 @@ const Badge = ({ children, variant = 'primary', size = 'md', animated = false })
   );
 };
 
-const Button = ({ 
-  children, 
-  variant = 'primary', 
-  size = 'md', 
+const Button = ({
+  children,
+  variant = 'primary',
+  size = 'md',
   icon: Icon,
   onClick,
   className = '',
@@ -77,7 +78,7 @@ const Button = ({
     active:scale-95 disabled:opacity-50
     hover:shadow-lg hover:-translate-y-0.5
   `;
-  
+
   const variants = {
     primary: 'bg-[#EE121A] text-white hover:bg-[#C40F15]',
     secondary: 'bg-white text-[#EE121A] border-2 border-[#EE121A] hover:bg-[#EE121A] hover:text-white',
@@ -85,7 +86,7 @@ const Button = ({
     outline: 'bg-white text-[#EE121A] border-2 border-[#EE121A] hover:bg-[#EE121A] hover:text-white',
     gray: 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-2 border-gray-200'
   };
-  
+
   const sizes = {
     sm: 'px-3 py-2 text-[10px]',
     md: 'px-5 py-2.5 text-[11px]',
@@ -93,7 +94,7 @@ const Button = ({
   };
 
   return (
-    <button 
+    <button
       onClick={onClick}
       disabled={loading}
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
@@ -126,7 +127,7 @@ const ProgressBar = ({ progress, size = 'md', showLabel = true }) => {
         </div>
       )}
       <div className={`w-full bg-gray-100 rounded-full overflow-hidden ${sizes[size]}`}>
-        <div 
+        <div
           className="h-full bg-gradient-to-r from-[#EE121A] to-[#FF6B6B] rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(238,18,26,0.3)]"
           style={{ width: `${progress}%` }}
         />
@@ -166,7 +167,7 @@ const Avatar = ({ name, src, size = 'md', status }) => {
 // ==========================================
 const HeroSection = ({ user, stats, onPlayVideo, onDownloadStats }) => {
   const [greeting, setGreeting] = useState('');
-  
+
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Buenos días');
@@ -178,9 +179,9 @@ const HeroSection = ({ user, stats, onPlayVideo, onDownloadStats }) => {
     <div className="relative rounded-[2.5rem] overflow-hidden min-h-[480px] flex items-center shadow-xl">
       {/* IMAGEN DE FONDO + DEGRADADO ROJO */}
       <div className="absolute inset-0">
-        <img 
-          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2000" 
-          alt="Learning background" 
+        <img
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2000"
+          alt="Learning background"
           className="w-full h-full object-cover"
         />
         {/* DEGRADADO ROJO SOLO */}
@@ -197,10 +198,10 @@ const HeroSection = ({ user, stats, onPlayVideo, onDownloadStats }) => {
               <Sparkles size={12} /> {greeting.toUpperCase()} {user.name.split(' ')[0].toUpperCase()}
             </Badge>
           </div>
-          
+
           <div className="space-y-2">
             <h1 className="text-5xl lg:text-7xl font-black text-white leading-[0.9] tracking-tighter italic uppercase drop-shadow-lg">
-              TRANSFORMA<br/>
+              TRANSFORMA<br />
               <span className="text-white/90">
                 EL FUTURO
               </span>
@@ -208,30 +209,30 @@ const HeroSection = ({ user, stats, onPlayVideo, onDownloadStats }) => {
           </div>
 
           <p className="text-white/90 text-lg max-w-md font-medium leading-relaxed drop-shadow-md">
-            Has completado <span className="text-white font-bold text-xl">{stats.hoursThisWeek} horas</span> esta semana. 
+            Has completado <span className="text-white font-bold text-xl">{stats.hoursThisWeek} horas</span> esta semana.
             Estás a <span className="text-white font-bold text-xl">{stats.nextMilestone} horas</span> de tu siguiente insignia.
           </p>
 
           {/* BOTONES MEJORADOS - MÁS LLAMATIVOS Y CON MEJOR CONTRASTE */}
           <div className="flex flex-wrap gap-4 pt-4">
             {/* Botón primario: Gradiente rojo con borde brillante */}
-            <Button 
-              size="lg" 
-              icon={Play} 
-              onClick={onPlayVideo} 
+            <Button
+              size="lg"
+              icon={Play}
+              onClick={onPlayVideo}
               className="bg-gradient-to-r from-[#EE121A] to-[#FF4444] text-white border-2 border-white/80 hover:from-[#FF4444] hover:to-[#EE121A] hover:border-white hover:scale-105 hover:shadow-[0_0_20px_rgba(238,18,26,0.4)] transition-all duration-300 shadow-lg font-black uppercase tracking-wider px-8"
             >
               Ver video de formación
             </Button>
-            
-<Button 
-  size="lg" 
-  icon={Download} 
-  onClick={onDownloadStats}
-  className="bg-white/10 text-white border-2 border-white/50 hover:bg-white hover:text-[#EE121A] hover:border-white transition-all duration-300 backdrop-blur-sm"
->
-  Descargar estadísticas
-</Button>
+
+            <Button
+              size="lg"
+              icon={Download}
+              onClick={onDownloadStats}
+              className="bg-white/10 text-white border-2 border-white/50 hover:bg-white hover:text-[#EE121A] hover:border-white transition-all duration-300 backdrop-blur-sm"
+            >
+              Descargar estadísticas
+            </Button>
           </div>
         </div>
 
@@ -265,7 +266,7 @@ const HeroSection = ({ user, stats, onPlayVideo, onDownloadStats }) => {
             <p className="text-xs font-bold text-gray-600 uppercase tracking-wider mt-1">Horas formación</p>
             {/* Progress bar mejorado */}
             <div className="mt-4 w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-[#EE121A] to-[#FF6B6B] rounded-full transition-all duration-500"
                 style={{ width: `${(stats.hoursTotal / 200) * 100}%` }}
               />
@@ -285,11 +286,11 @@ const HeroSection = ({ user, stats, onPlayVideo, onDownloadStats }) => {
                 </div>
               </div>
               <div className="flex -space-x-2">
-                {[1,2,3,4,5].map((i) => (
+                {[1, 2, 3, 4, 5].map((i) => (
                   <div key={i} className={`
                     w-10 h-10 rounded-full border-3 border-white flex items-center justify-center text-xs font-bold shadow-md transition-all duration-300
-                    ${i <= stats.streak 
-                      ? 'bg-gradient-to-br from-[#EE121A] to-[#FF4444] text-white scale-110 shadow-[0_4px_15px_rgba(238,18,26,0.4)]' 
+                    ${i <= stats.streak
+                      ? 'bg-gradient-to-br from-[#EE121A] to-[#FF4444] text-white scale-110 shadow-[0_4px_15px_rgba(238,18,26,0.4)]'
                       : 'bg-gray-200 text-gray-400 border-gray-100'
                     }
                     ${i === stats.streak ? 'animate-pulse ring-2 ring-[#EE121A] ring-offset-2' : ''}
@@ -310,12 +311,12 @@ const DailyMotivation = ({ quote, author }) => {
     <div className="relative bg-gradient-to-r from-[#EE121A] to-[#FF6B6B] rounded-[2.5rem] p-8 md:p-12 shadow-xl overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
-      
+
       <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
         <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-white shrink-0">
           <Lightbulb size={40} />
         </div>
-        
+
         <div className="flex-1 text-center md:text-left">
           <Badge variant="secondary" size="sm" className="mb-4 bg-white/20 text-white border-white/30">
             <Star size={10} /> FRASE DEL DÍA
@@ -343,34 +344,34 @@ const PersonalStats = ({ stats }) => {
   const [hoveredStat, setHoveredStat] = useState(null);
 
   const personalMetrics = [
-    { 
+    {
       id: 'courses',
-      label: 'Cursos Completados', 
-      value: stats.coursesCompleted, 
+      label: 'Cursos Completados',
+      value: stats.coursesCompleted,
       total: stats.totalCourses,
       icon: BookOpen,
       color: 'from-[#EE121A] to-[#FF6B6B]'
     },
-    { 
+    {
       id: 'medals',
-      label: 'Medallas Obtenidas', 
-      value: stats.medals, 
+      label: 'Medallas Obtenidas',
+      value: stats.medals,
       total: stats.totalMedals,
       icon: Award,
       color: 'from-amber-400 to-orange-500'
     },
-    { 
+    {
       id: 'impact',
-      label: 'Impacto DEI', 
-      value: stats.impactScore, 
+      label: 'Impacto DEI',
+      value: stats.impactScore,
       total: 100,
       icon: Heart,
       color: 'from-emerald-400 to-emerald-600'
     },
-    { 
+    {
       id: 'streak',
-      label: 'Días Consecutivos', 
-      value: stats.streak, 
+      label: 'Días Consecutivos',
+      value: stats.streak,
       total: 30,
       icon: Zap,
       color: 'from-blue-400 to-blue-600'
@@ -388,15 +389,80 @@ const PersonalStats = ({ stats }) => {
             Tus <span className="text-[#EE121A]">Estadísticas</span>
           </h2>
         </div>
+
+        {/* BOTÓN COMPARTIR - NUEVO */}
+        <div className="relative group">
+          <button
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#EE121A] text-white rounded-xl text-[11px] font-black uppercase tracking-wider hover:bg-[#C40F15] transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+          >
+            <Share2 size={16} strokeWidth={2.5} />
+            Compartir
+          </button>
+
+          {/* MENÚ DESPLEGABLE DE REDES */}
+          <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+            <div className="p-2 space-y-1">
+              {/* FACEBOOK - MURO */}
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent('¡Mira mi progreso en Claro Inclusión Hub! 🏆 ' + stats.overallProgress + '% completado - Nivel ' + stats.level)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-blue-50 transition-colors text-left"
+              >
+                <div className="w-8 h-8 bg-[#1877F2] rounded-lg flex items-center justify-center text-white shrink-0">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </div>
+                <div>
+                  <p className="text-xs font-black text-gray-800">Facebook</p>
+                  <p className="text-[9px] text-gray-400 font-bold uppercase">Publicar en mi muro</p>
+                </div>
+              </a>
+
+              {/* WHATSAPP - MENSAJE */}
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent('¡Mira mi progreso en Claro Inclusión Hub! 🏆\n\nNivel: ' + stats.level + '\nProgreso: ' + stats.overallProgress + '%\nPuntos: ' + stats.puntos.toLocaleString() + '\n\nÚnete tú también: ' + window.location.href)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-green-50 transition-colors text-left"
+              >
+                <div className="w-8 h-8 bg-[#25D366] rounded-lg flex items-center justify-center text-white shrink-0">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                </div>
+                <div>
+                  <p className="text-xs font-black text-gray-800">WhatsApp</p>
+                  <p className="text-[9px] text-gray-400 font-bold uppercase">Enviar por chat</p>
+                </div>
+              </a>
+
+              {/* WHATSAPP - HISTORIAS/STATUS */}
+              <button
+                onClick={() => {
+                  const text = `¡Mi progreso DEI! 🏆\nNivel: ${stats.level}\n${stats.overallProgress}% completado\n${stats.puntos.toLocaleString()} pts`;
+                  navigator.clipboard.writeText(text + '\n\n' + window.location.href);
+                  alert('¡Texto copiado! Ábrelo en WhatsApp y pégalo en tu estado/historia.');
+                }}
+                className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-green-50 transition-colors text-left"
+              >
+                <div className="w-8 h-8 bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-lg flex items-center justify-center text-white shrink-0">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m-8-8h4m12 0h-4m-1.5-6.5l-2.8 2.8m-5.6 5.6l2.8-2.8m0-5.6l-2.8 2.8m5.6 5.6l-2.8-2.8"/></svg>
+                </div>
+                <div>
+                  <p className="text-xs font-black text-gray-800">WhatsApp Status</p>
+                  <p className="text-[9px] text-gray-400 font-bold uppercase">Copiar para historias</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {personalMetrics.map((metric) => {
           const percentage = (metric.value / metric.total) * 100;
           const isHovered = hoveredStat === metric.id;
-          
+
           return (
-            <div 
+            <div
               key={metric.id}
               className={`
                 group relative bg-white rounded-[2rem] p-6 border-2 transition-all duration-300 cursor-pointer
@@ -411,16 +477,16 @@ const PersonalStats = ({ stats }) => {
                 </div>
                 <span className="text-3xl font-black text-gray-800 italic">{metric.value}</span>
               </div>
-              
+
               <h4 className="text-sm font-black text-gray-600 uppercase tracking-wider mb-3">{metric.label}</h4>
-              
+
               <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div 
+                <div
                   className={`absolute inset-y-0 left-0 rounded-full bg-gradient-to-r ${metric.color} transition-all duration-1000`}
                   style={{ width: `${percentage}%` }}
                 />
               </div>
-              
+
               <p className="text-[10px] font-bold text-gray-400 uppercase mt-2">
                 {Math.round(percentage)}% del objetivo mensual
               </p>
@@ -439,9 +505,9 @@ const PersonalStats = ({ stats }) => {
           <div className="relative w-48 h-48 shrink-0">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" strokeWidth="8" />
-              <circle 
-                cx="50" cy="50" r="45" fill="none" 
-                stroke="#EE121A" strokeWidth="8" 
+              <circle
+                cx="50" cy="50" r="45" fill="none"
+                stroke="#EE121A" strokeWidth="8"
                 strokeDasharray={`${2 * Math.PI * 45}`}
                 strokeDashoffset={`${2 * Math.PI * 45 * (1 - stats.overallProgress / 100)}`}
                 strokeLinecap="round"
@@ -457,10 +523,10 @@ const PersonalStats = ({ stats }) => {
           <div className="flex-1 space-y-4">
             <h3 className="text-xl font-black text-gray-800 uppercase italic">Tu Camino DEI</h3>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Estás en el <span className="font-bold text-[#EE121A]">nivel {stats.level}</span> de tu desarrollo en diversidad, equidad e inclusión. 
+              Estás en el <span className="font-bold text-[#EE121A]">nivel {stats.level}</span> de tu desarrollo en diversidad, equidad e inclusión.
               Completa {stats.nextLevelPoints} puntos más para alcanzar el siguiente nivel.
             </p>
-            
+
             <div className="grid grid-cols-3 gap-4 pt-4">
               <div className="text-center p-3 bg-red-50 rounded-2xl">
                 <p className="text-2xl font-black text-[#EE121A]">{stats.weeklyRank}</p>
@@ -482,7 +548,7 @@ const PersonalStats = ({ stats }) => {
   );
 };
 
-const ActiveCourses = ({ courses, onCourseClick, onDownloadCertificate }) => {
+const ActiveCourses = ({ courses, onCourseClick, onDownloadCertificate, onNavigate }) => {
   const [hoveredCourse, setHoveredCourse] = useState(null);
 
   return (
@@ -503,12 +569,12 @@ const ActiveCourses = ({ courses, onCourseClick, onDownloadCertificate }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <div 
+          <div
             key={course.id}
             className={`
               group relative bg-white rounded-[2rem] overflow-hidden border-2 transition-all duration-500
-              ${course.progress === 100 
-                ? 'border-emerald-200 bg-emerald-50/30' 
+              ${course.progress === 100
+                ? 'border-emerald-200 bg-emerald-50/30'
                 : 'border-gray-100 hover:border-[#EE121A]/30 hover:shadow-xl'}
             `}
             onMouseEnter={() => setHoveredCourse(course.id)}
@@ -516,13 +582,13 @@ const ActiveCourses = ({ courses, onCourseClick, onDownloadCertificate }) => {
           >
             {/* Image Section */}
             <div className="relative h-48 overflow-hidden">
-              <img 
-                src={course.image} 
+              <img
+                src={course.image}
                 alt={course.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              
+
               {/* Status Badge */}
               <div className="absolute top-4 left-4 flex gap-2">
                 <Badge variant={course.progress === 100 ? 'success' : 'primary'}>
@@ -572,8 +638,8 @@ const ActiveCourses = ({ courses, onCourseClick, onDownloadCertificate }) => {
                     </span>
                     <span>Última vez: {course.lastAccess}</span>
                   </div>
-                  <button 
-                    onClick={() => onCourseClick(course)}
+                  <button
+                    onClick={() => onNavigate('mi-progreso')}
                     className="w-full py-3 bg-[#EE121A] text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-[#C40F15] transition-all flex items-center justify-center gap-2"
                   >
                     Continuar módulo {course.currentModule}
@@ -590,7 +656,7 @@ const ActiveCourses = ({ courses, onCourseClick, onDownloadCertificate }) => {
                     <Award size={14} />
                     <span>Certificado disponible</span>
                   </div>
-                  <button 
+                  <button
                     onClick={() => onDownloadCertificate(course)}
                     className="w-full py-3 bg-emerald-500 text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
                   >
@@ -639,13 +705,13 @@ const PersonalCalendar = ({ events, onAddToCalendar }) => {
 
       <div className="flex-1 overflow-y-auto space-y-3 pr-2">
         {events.map((event) => (
-          <div 
+          <div
             key={event.id}
             onClick={() => setSelectedEvent(selectedEvent === event.id ? null : event.id)}
             className={`
               group p-4 rounded-2xl border-2 transition-all cursor-pointer
-              ${selectedEvent === event.id 
-                ? 'border-[#EE121A] bg-red-50 shadow-md' 
+              ${selectedEvent === event.id
+                ? 'border-[#EE121A] bg-red-50 shadow-md'
                 : 'border-gray-100 hover:border-[#EE121A]/30 hover:shadow-sm'}
             `}
           >
@@ -657,7 +723,7 @@ const PersonalCalendar = ({ events, onAddToCalendar }) => {
                 <span className="text-[10px] uppercase">{event.month}</span>
                 <span className="text-xl italic">{event.day}</span>
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <h4 className="text-sm font-black text-gray-800 uppercase italic leading-tight line-clamp-2">
@@ -667,7 +733,7 @@ const PersonalCalendar = ({ events, onAddToCalendar }) => {
                     <Badge variant="primary" size="sm">Obligatorio</Badge>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-3 mt-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                   <span className="flex items-center gap-1">
                     <Clock size={12} /> {event.time}
@@ -753,18 +819,18 @@ const QuickChat = ({ messages, onSendMessage }) => {
         </div>
 
         {messages.map((msg, idx) => (
-          <div 
-            key={msg.id} 
+          <div
+            key={msg.id}
             className={`flex gap-3 ${msg.isMe ? 'flex-row-reverse' : ''} animate-in slide-in-from-bottom-2 duration-300`}
             style={{ animationDelay: `${idx * 50}ms` }}
           >
             <Avatar name={msg.user} size="sm" status={msg.isMe ? 'online' : 'away'} />
-            
+
             <div className={`max-w-[75%] space-y-1`}>
               <div className={`
                 p-4 rounded-2xl shadow-sm text-sm font-medium leading-relaxed
-                ${msg.isMe 
-                  ? 'bg-[#EE121A] text-white rounded-tr-sm' 
+                ${msg.isMe
+                  ? 'bg-[#EE121A] text-white rounded-tr-sm'
                   : 'bg-white text-gray-700 rounded-tl-sm border border-gray-100'}
               `}>
                 {!msg.isMe && (
@@ -778,7 +844,7 @@ const QuickChat = ({ messages, onSendMessage }) => {
             </div>
           </div>
         ))}
-        
+
         <div ref={chatEndRef} />
       </div>
 
@@ -792,13 +858,13 @@ const QuickChat = ({ messages, onSendMessage }) => {
             placeholder="Escribe un mensaje a tu equipo..."
             className="flex-1 bg-transparent outline-none text-sm font-bold text-gray-700 placeholder:text-gray-400"
           />
-          <button 
+          <button
             type="submit"
             disabled={!newMessage.trim()}
             className={`
               p-3 rounded-xl transition-all duration-300
-              ${newMessage.trim() 
-                ? 'bg-[#EE121A] text-white shadow-lg hover:shadow-xl hover:scale-105' 
+              ${newMessage.trim()
+                ? 'bg-[#EE121A] text-white shadow-lg hover:shadow-xl hover:scale-105'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
             `}
           >
@@ -831,13 +897,13 @@ const BadgesSection = () => {
         </div>
         <Button variant="ghost">Ver todas las recompensas</Button>
       </div>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {badges.map((badge, idx) => (
           <div key={idx} className={`
             group relative p-6 rounded-3xl border-2 transition-all duration-300 cursor-pointer
-            ${badge.earned 
-              ? 'bg-white border-gray-100 hover:border-[#EE121A] hover:shadow-xl' 
+            ${badge.earned
+              ? 'bg-white border-gray-100 hover:border-[#EE121A] hover:shadow-xl'
               : 'bg-gray-50 border-gray-200 opacity-60 grayscale'}
           `}>
             <div className={`
@@ -875,8 +941,8 @@ const NewsSection = ({ news }) => {
     { id: 'learning', label: 'Aprendizaje' }
   ];
 
-  const filteredNews = activeCategory === 'all' 
-    ? news 
+  const filteredNews = activeCategory === 'all'
+    ? news
     : news.filter(item => item.category === activeCategory);
 
   return (
@@ -891,7 +957,7 @@ const NewsSection = ({ news }) => {
           </h2>
           <p className="text-gray-500 text-sm mt-1">Mantente al día con lo que sucede en la organización</p>
         </div>
-        
+
         <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
           {categories.map((cat) => (
             <button
@@ -899,8 +965,8 @@ const NewsSection = ({ news }) => {
               onClick={() => setActiveCategory(cat.id)}
               className={`
                 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all
-                ${activeCategory === cat.id 
-                  ? 'bg-[#EE121A] text-white shadow-md' 
+                ${activeCategory === cat.id
+                  ? 'bg-[#EE121A] text-white shadow-md'
                   : 'bg-white text-gray-600 border border-gray-200 hover:border-[#EE121A] hover:text-[#EE121A]'}
               `}
             >
@@ -912,24 +978,24 @@ const NewsSection = ({ news }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredNews.map((item) => (
-          <article 
+          <article
             key={item.id}
             className="group bg-white rounded-[2rem] overflow-hidden border border-gray-100 hover:border-[#EE121A]/30 hover:shadow-xl transition-all duration-300"
           >
             <div className="relative h-48 overflow-hidden">
-              <img 
-                src={item.image} 
+              <img
+                src={item.image}
                 alt={item.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              
+
               <div className="absolute top-4 left-4">
                 <Badge variant={item.category === 'dei' ? 'primary' : item.category === 'corporate' ? 'secondary' : 'light'} size="sm">
                   {item.category === 'dei' ? 'DEI' : item.category === 'corporate' ? 'CORPORATIVO' : 'APRENDIZAJE'}
                 </Badge>
               </div>
-              
+
               <div className="absolute bottom-4 right-4 flex items-center gap-1 text-white/80 text-xs font-bold">
                 <Clock size={12} />
                 {item.readTime}
@@ -949,7 +1015,7 @@ const NewsSection = ({ news }) => {
               <h3 className="text-lg font-black text-gray-800 leading-tight group-hover:text-[#EE121A] transition-colors uppercase italic">
                 {item.title}
               </h3>
-              
+
               <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
                 {item.excerpt}
               </p>
@@ -986,47 +1052,34 @@ const VideoModal = ({ isOpen, onClose, videoUrl }) => {
 
   return (
     <div className="fixed inset-0 z-[50] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-[2rem] w-full max-w-5xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 relative">
-        {/* BOTÓN X PARA CERRAR - CORREGIDO */}
-        <button 
+      <div className="bg-[#EE121A] rounded-[2rem] w-full max-w-5xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 relative">
+        {/* BOTÓN X PARA CERRAR - BLANCO */}
+        <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-50 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-gray-800 hover:bg-[#EE121A] hover:text-white transition-all shadow-lg border border-gray-200"
+          className="absolute top-4 right-4 z-50 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-[#EE121A] transition-all shadow-lg border border-white/30"
         >
           <X size={24} strokeWidth={3} />
         </button>
 
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 pr-20">
-          <h3 className="text-xl font-black italic tracking-tighter uppercase text-gray-800">
+        <div className="flex items-center justify-between p-6 border-b border-white/20 pr-20">
+          <h3 className="text-xl font-black italic tracking-tighter uppercase text-white">
             Video de Formación DEI
           </h3>
         </div>
-        
-        <div className="aspect-video bg-gray-900 flex items-center justify-center relative">
-          <iframe
-            width="50%"
-            height="50%"
-            src={videoUrl || "https://www.youtube.com/embed/dQw4w9WgXcQ"}
-            title="Video de Formación"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="absolute inset-0"
-          />
-        </div>
 
-        <div className="p-6 bg-gray-50">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-black text-gray-800 uppercase tracking-wider text-sm">
-                Bienvenida a la Cultura DEI
-              </h4>
-              <p className="text-sm text-gray-500 mt-1">
-                Duración: 5:30 min • Obligatorio para todos los colaboradores
-              </p>
-            </div>
-            <Button variant="outline" icon={Download}>
-              Descargar material
-            </Button>
+        {/* CONTENEDOR DEL VIDEO CENTRADO */}
+        <div className="p-8 flex items-center justify-center">
+          <div className="w-full max-w-3xl aspect-video bg-black rounded-xl overflow-hidden shadow-lg">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/HWL4lpvsnXk"
+              title="Video de Formación"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
           </div>
         </div>
       </div>
@@ -1106,9 +1159,9 @@ const MOCK_COURSES = [
     currentModule: 10,
     timeLeft: 0,
     lastAccess: "Hace 3 días",
-    image: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800",
+    image: "https://www.iberdrola.com/documents/20125/40204/Accesibilidad_Web_746x419.jpg/4e4e1496-67ba-cfaf-13d1-1b03aab12074?t=1627015717162",
     isNew: false,
-    completedDate: "18 Dic 2026"
+    completedDate: "24 Febrero 2026"
   }
 ];
 
@@ -1230,7 +1283,7 @@ const DAILY_QUOTE = {
 // COMPONENTE PRINCIPAL
 // ==========================================
 
-export default function InclusionDashboard() {
+export default function InclusionDashboard({ onNavigate = () => {} }) {
   const [chatMessages, setChatMessages] = useState(MOCK_CHAT_MESSAGES);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
@@ -1256,7 +1309,7 @@ export default function InclusionDashboard() {
   };
 
   const handleDownloadCertificate = (course) => {
-    const canvaLink = "https://www.canva.com/templates/certificados/";
+    const canvaLink = "https://canva.link/certificado-liderazgoinclusivo";
     window.open(canvaLink, '_blank');
   };
 
@@ -1318,13 +1371,13 @@ Generado por Claro Inclusión Hub © 2026
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans">
-      
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 pt-24 pb-20 space-y-16">
-        
+
         {/* 1. HERO PERSONALIZADO - DEGRADADO SUAVE */}
-        <HeroSection 
-          user={MOCK_USER} 
+        <HeroSection
+          user={MOCK_USER}
           stats={MOCK_STATS}
           onPlayVideo={handlePlayVideo}
           onDownloadStats={handleDownloadStats}
@@ -1332,23 +1385,24 @@ Generado por Claro Inclusión Hub © 2026
 
         {/* 2. FRASE DEL DÍA + ESTADÍSTICAS PERSONALES */}
         <DailyMotivation quote={DAILY_QUOTE.text} author={DAILY_QUOTE.author} />
-        
+
         <PersonalStats stats={MOCK_STATS} />
 
         {/* 3. MIS CURSOS ACTIVOS */}
-        <ActiveCourses 
+        <ActiveCourses
           courses={MOCK_COURSES}
           onCourseClick={handleCourseClick}
           onDownloadCertificate={handleDownloadCertificate}
+          onNavigate={onNavigate}
         />
 
         {/* 4. GRID: CHAT + CALENDARIO */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <QuickChat 
+          <QuickChat
             messages={chatMessages}
             onSendMessage={handleSendMessage}
           />
-          <PersonalCalendar 
+          <PersonalCalendar
             events={MOCK_EVENTS}
             onAddToCalendar={handleAddToCalendar}
           />
@@ -1363,7 +1417,7 @@ Generado por Claro Inclusión Hub © 2026
       </main>
 
       {/* VIDEO MODAL - CORREGIDO CON X FUNCIONAL */}
-      <VideoModal 
+      <VideoModal
         isOpen={showVideoModal}
         onClose={handleCloseVideo}
         videoUrl={videoUrl}

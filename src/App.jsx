@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from './componentes/Navbar'; 
 import NotFound from "./pages/NotFound";
+import MiProgreso from './assets/MiProgreso';
 
 // Secciones del Dashboard
 import InclusionDashboard from './assets/InclusionDashboard';
@@ -27,6 +28,8 @@ export default function App() {
         return <SeccionDenuncia />;
       case 'equipo':
         return <Equipo />;
+  case 'mi-progreso':
+  return <MiProgreso onNavigate={handleNavigate} />;
       case 'academia':
       case 'guia': // Añadí guía por si acaso
         return <Academia />;

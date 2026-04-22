@@ -6,7 +6,6 @@ import {
   LogIn, LogOut, Lock 
 } from 'lucide-react';
 
-// Se agrega un valor por defecto a onNavigate para evitar el error de "not a function"
 const Navbar = ({ 
   currentScreen, 
   onNavigate = () => {}, 
@@ -17,10 +16,8 @@ const Navbar = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Lógica de permisos para mostrar la Intranet (dueños, co-dueños o editores)
   const isOwnerOrEditor = role === "owner" || role === "coowner" || role === "editor";
 
-  // Ítems de navegación dinámica
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "premios", label: "Rewards Elite", icon: Gift },
@@ -30,7 +27,6 @@ const Navbar = ({
     ...(isOwnerOrEditor ? [{ id: "intranet", label: "Intranet", icon: Lock }] : []),
   ];
 
-  // Función auxiliar para navegar de forma segura
   const handleNavClick = (id) => {
     if (typeof onNavigate === 'function') {
       onNavigate(id);
@@ -41,7 +37,7 @@ const Navbar = ({
     <nav className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-6 shadow-sm">
       <div className="max-w-[1600px] mx-auto h-full flex items-center justify-between">
         
-        {/* SECCIÓN LOGO */}
+        {/* SECCIÓN LOGO - ROJO CORPORATIVO */}
         <motion.div 
           className="flex items-center gap-2 group cursor-pointer shrink-0"
           whileHover={{ scale: 1.02 }}
@@ -51,7 +47,7 @@ const Navbar = ({
             <Globe size={16} strokeWidth={3} />
           </div>
           <div className="flex flex-col">
-            <p className="font-black text-lg tracking-tighter leading-none text-slate-900">CLARO</p>
+            <p className="font-black tracking-tighter leading-none text-[#EE121A]">CLARO</p>
             <p className="text-[7px] font-black text-[#EE121A] uppercase tracking-[0.2em]">Inclusión Portal</p>
           </div>
         </motion.div>
@@ -69,8 +65,8 @@ const Navbar = ({
                 onClick={() => handleNavClick(item.id)}
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-xl transition-all duration-200 text-[10px] font-bold uppercase tracking-wider ${
                   isActive 
-                    ? 'bg-slate-900 text-white shadow-md' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-[#EE121A] text-white shadow-md' 
+                    : 'text-slate-500 hover:bg-red-50 hover:text-[#EE121A]'
                 }`}
               >
                 <Icon size={14} strokeWidth={isActive ? 2.5 : 2} />
@@ -85,10 +81,10 @@ const Navbar = ({
           
           {isLoggedIn && (
             <div 
-              className="hidden sm:flex items-center gap-1.5 bg-slate-50 py-1.5 px-3 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors"
+              className="hidden sm:flex items-center gap-1.5 bg-red-50 py-1.5 px-3 rounded-xl border border-red-100 cursor-pointer hover:bg-red-100 transition-colors"
               onClick={() => handleNavClick('premios')}
             >
-              <Star size={12} className="text-amber-500" fill="currentColor" />
+              <Star size={12} className="text-[#EE121A]" fill="currentColor" />
               <span className="text-[10px] font-black text-slate-900">
                 10,450 <span className="text-[#EE121A]">PTS</span>
               </span>
@@ -103,7 +99,7 @@ const Navbar = ({
                 <p className="font-bold text-xs text-slate-900 leading-none">{displayName || 'Usuario'}</p>
                 <p className="text-[8px] font-medium text-[#EE121A] uppercase">{role || 'Miembro'}</p>
               </div>
-              <div className="relative w-8 h-8 rounded-xl bg-slate-100 overflow-hidden ring-2 ring-slate-50 group cursor-pointer shadow-sm">
+              <div className="relative w-8 h-8 rounded-xl bg-red-50 overflow-hidden ring-2 ring-red-100 group cursor-pointer shadow-sm">
                 <img 
                   src={`https://api.dicebear.com/8.x/avataaars/svg?seed=${displayName || 'Claro'}`} 
                   alt="Avatar" 
@@ -123,7 +119,7 @@ const Navbar = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleNavClick("login")}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 text-[#EE121A] text-[10px] font-black uppercase tracking-wider hover:bg-[#EE121A] hover:text-white transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#EE121A] text-white text-[10px] font-black uppercase tracking-wider hover:bg-red-700 transition-all"
             >
               <LogIn size={14} strokeWidth={3} />
               Ingresar
@@ -131,7 +127,7 @@ const Navbar = ({
           )}
 
           <button 
-            className="lg:hidden p-1.5 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+            className="lg:hidden p-1.5 text-slate-600 hover:bg-red-50 hover:text-[#EE121A] rounded-lg transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -158,8 +154,8 @@ const Navbar = ({
                   }}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase transition-colors ${
                     currentScreen === item.id 
-                      ? 'bg-red-50 text-[#EE121A]' 
-                      : 'text-slate-600 hover:bg-slate-50'
+                      ? 'bg-[#EE121A] text-white' 
+                      : 'text-slate-600 hover:bg-red-50 hover:text-[#EE121A]'
                   }`}
                 >
                   <item.icon size={18} />
@@ -173,7 +169,7 @@ const Navbar = ({
                     handleNavClick("login"); 
                     setIsMobileMenuOpen(false); 
                   }}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase text-[#EE121A] bg-red-50 mt-2"
+                  className="w-full flex items-center gap-3 p-3 rounded-lg text-[11px] font-bold uppercase text-white bg-[#EE121A] mt-2"
                 >
                   <LogIn size={18} /> Ingresar al Portal
                 </button>
